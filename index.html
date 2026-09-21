@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بازگردان — افزونه بازیابی سفارش‌های ناموفق ووکامرس</title>
+<meta name="description" content="افزونه ووکامرس بازگردان سفارش‌های ناموفق و رهاشده را خودکار پیگیری می‌کند: ایمیل و پیامک با لینک پرداخت مجدد، کد تخفیف زمان‌دار و گزارش دقیق نرخ بازگشت.">
+<meta property="og:title" content="بازگردان — بازیابی خودکار سفارش‌های ناموفق ووکامرس">
+<meta property="og:description" content="مشتری تا درگاه آمد ولی پرداخت کامل نشد؟ بازگردان خودکار پیگیری‌اش می‌کند و نشان می‌دهد چقدر فروش برگشته است.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#071528">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="assets/img/icon-180.png">
+<link rel="preload" href="assets/fonts/DanaFaNum-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/IRANSansWeb.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face{font-family:"Dana";src:url("assets/fonts/DanaFaNum-Bold.woff2") format("woff2");font-weight:700 900;font-display:swap}
+  @font-face{font-family:"Dana";src:url("assets/fonts/DanaFaNum-Regular.woff2") format("woff2");font-weight:400 600;font-display:swap}
+  @font-face{font-family:"IRANSans";src:url("assets/fonts/IRANSansWeb_Light.woff2") format("woff2");font-weight:300;font-display:swap}
+  @font-face{font-family:"IRANSans";src:url("assets/fonts/IRANSansWeb.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"IRANSans";src:url("assets/fonts/IRANSansWeb_Medium.woff2") format("woff2");font-weight:500;font-display:swap}
+  @font-face{font-family:"IRANSans";src:url("assets/fonts/IRANSansWeb_Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+
+  :root{
+    --ground:#071528; --deep:#0b2240; --ink:#eaf2fb; --soft:#a3b9d1; --mute:#7390b0;
+    --line:rgba(255,255,255,.12); --surf:rgba(255,255,255,.055); --surf2:rgba(255,255,255,.09);
+    --mint:#3ef0a2; --sky:#6fd8ff; --violet:#8b6cff; --coral:#ff8a7a;
+    --grad:linear-gradient(120deg,#6fd8ff,#3ef0a2);
+    --display:"Dana","IRANSans",Tahoma,sans-serif; --body:"IRANSans",Tahoma,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:2;
+       -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  img{max-width:100%;display:block}
+  a{color:inherit}
+  .wrap{max-width:1160px;margin:0 auto;padding-inline:22px}
+  .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.35;margin:0;text-wrap:balance}
+  p{margin:0}
+
+  /* پس‌زمینه */
+  .sky{position:absolute;inset:0 0 auto 0;height:980px;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(60% 55% at 82% 0%, rgba(88,170,255,.32), transparent 65%),
+      radial-gradient(45% 45% at 8% 30%, rgba(18,161,80,.22), transparent 65%),
+      radial-gradient(55% 45% at 50% 100%, rgba(122,90,248,.18), transparent 70%);}
+
+  /* ناوبری */
+  header.nav{position:sticky;top:0;z-index:20;background:rgba(7,21,40,.72);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;gap:26px;height:68px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:800;font-size:21px}
+  .brand img{width:36px;height:36px;border-radius:9px}
+  .nav nav{display:flex;gap:22px;margin-inline-start:12px}
+  .nav nav a{text-decoration:none;color:var(--soft);font-size:15px;transition:color .2s}
+  .nav nav a:hover{color:var(--ink)}
+  .nav .cta{margin-inline-start:auto}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--display);font-weight:700;
+    border-radius:13px;padding:11px 22px;font-size:16px;transition:transform .15s, box-shadow .2s;white-space:nowrap}
+  .btn:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+  .btn-main{background:var(--grad);color:#04213a;box-shadow:0 10px 30px rgba(62,240,162,.28)}
+  .btn-main:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(62,240,162,.38)}
+  .btn-ghost{border:1px solid rgba(255,255,255,.28);color:var(--ink);background:rgba(255,255,255,.04)}
+  .btn-ghost:hover{background:rgba(255,255,255,.1)}
+  .btn-sm{padding:8px 16px;font-size:14.5px;border-radius:11px}
+
+  /* هیرو */
+  .hero{position:relative;padding-block:64px 40px}
+  .hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.3fr .7fr;gap:36px;align-items:center}
+  .kicker{display:inline-block;font-size:14.5px;font-weight:500;color:var(--ink);background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.22);border-radius:30px;padding:4px 16px;margin-bottom:22px}
+  .hero h1{font-size:clamp(36px,4.8vw,60px);line-height:1.28}
+  .hero .lede{font-size:clamp(17px,1.6vw,20px);color:var(--soft);margin-top:22px;max-width:36em;line-height:2.05}
+  .hero .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:30px;color:var(--mute);font-size:14px}
+  .chips span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mint);
+    margin-inline-end:8px;vertical-align:middle}
+  .visual{position:relative;justify-self:center;width:min(100%,460px);aspect-ratio:1}
+  .visual .coin{width:100%;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 30px 40px rgba(0,0,0,.35))}
+  .ticket{position:absolute;left:4%;bottom:12%;background:linear-gradient(135deg,#fff,#e5f2ff);color:#0d2a4d;
+    font-family:var(--display);font-weight:800;font-size:clamp(16px,2vw,22px);padding:12px 26px;border-radius:14px;
+    transform:rotate(-11deg);box-shadow:0 2px 0 #c5d8ec,0 4px 0 #b3cae3,0 6px 0 #a3bddb,0 24px 36px rgba(0,0,0,.45);
+    animation:float 7s ease-in-out -2.5s infinite}
+  .ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:18px;height:18px;border-radius:50%;
+    background:var(--ground);transform:translateY(-50%)}
+  .ticket::before{left:-9px}.ticket::after{right:-9px}
+  .order{position:absolute;right:0;top:8%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);
+    backdrop-filter:blur(8px);border-radius:16px;padding:12px 16px;font-size:14px;box-shadow:0 18px 36px rgba(0,0,0,.35);
+    animation:float 7s ease-in-out -4s infinite}
+  .order b{font-family:var(--display);display:block;font-size:15px}
+  .pill{display:inline-block;border-radius:20px;padding:0 10px;font-size:12.5px;font-weight:700;margin-top:4px}
+  .p-red{background:var(--coral);color:#3a0b0b}.p-green{background:var(--mint);color:#04301f}
+  @keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+  /* بخش‌ها */
+  section{position:relative;padding-block:84px}
+  .eyebrow{font-size:14px;letter-spacing:.04em;color:var(--mint);font-weight:700;margin-bottom:10px}
+  .sec-head{max-width:720px;margin-bottom:44px}
+  .sec-head h2{font-size:clamp(28px,3.4vw,42px)}
+  .sec-head p{color:var(--soft);margin-top:14px;font-size:17.5px}
+  .band{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0));border-top:1px solid var(--line)}
+
+  /* مسئله */
+  .problem{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .reason{background:var(--surf);border:1px solid var(--line);border-radius:18px;padding:22px 20px}
+  .reason b{font-family:var(--display);font-size:18px;display:block;margin-bottom:6px}
+  .reason span{color:var(--soft);font-size:15px;line-height:1.9;display:block}
+
+  /* مراحل */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:st}
+  .step{position:relative;background:var(--surf);border:1px solid var(--line);border-radius:20px;padding:26px 22px}
+  .step::before{counter-increment:st;content:counter(st,persian);display:grid;place-items:center;width:46px;height:46px;
+    border-radius:14px;background:var(--grad);color:#04213a;font-family:var(--display);font-weight:800;font-size:22px;
+    margin-bottom:16px;box-shadow:0 10px 22px rgba(62,240,162,.25)}
+  .step h3{font-size:21px;margin-bottom:8px}
+  .step p{color:var(--soft);font-size:15.5px;line-height:1.95}
+
+  /* امکانات */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .feat{background:var(--surf);border:1px solid var(--line);border-radius:20px;padding:26px 24px;transition:border-color .2s,background .2s}
+  .feat:hover{border-color:rgba(111,216,255,.35);background:var(--surf2)}
+  .feat .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px;
+    background:linear-gradient(140deg,rgba(111,216,255,.2),rgba(62,240,162,.16));border:1px solid rgba(255,255,255,.18)}
+  .feat .ic svg{width:24px;height:24px;stroke:var(--mint);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .feat h3{font-size:19.5px;margin-bottom:8px}
+  .feat p{color:var(--soft);font-size:15.5px;line-height:1.95}
+
+  /* نمای پنل */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  .split .copy h2{font-size:clamp(26px,3vw,38px)}
+  .split .copy p{color:var(--soft);margin-top:16px;font-size:17px}
+  .split .copy ul{margin:22px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+  .split .copy li{position:relative;padding-inline-start:26px;color:var(--ink);font-size:16px}
+  .split .copy li::before{content:"";position:absolute;right:0;top:12px;width:14px;height:8px;border:2.5px solid var(--mint);
+    border-top:0;border-left:0;transform:rotate(45deg) translate(-2px,-3px);width:7px;height:13px}
+  .window{background:#f0f0f1;border-radius:14px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5);color:#1d2327;
+    border:1px solid rgba(255,255,255,.15)}
+  .window .bar{height:34px;background:#23282d;display:flex;align-items:center;gap:7px;padding-inline:14px}
+  .window .bar i{width:10px;height:10px;border-radius:50%;background:#555}
+  .window .bar i:nth-child(1){background:#ff5f57}.window .bar i:nth-child(2){background:#febc2e}.window .bar i:nth-child(3){background:#28c840}
+  .window .bar span{margin-inline-start:10px;color:#9aa4ae;font-size:12px;direction:ltr}
+  .wp{padding:18px 20px 22px;font-size:13.5px;line-height:1.8}
+  .wp h4{margin:0 0 12px;font-family:var(--display);font-size:16px}
+  .wp h4 small{background:#2a7ae2;color:#fff;border-radius:10px;padding:1px 9px;font-size:11px;margin-inline-start:8px;vertical-align:middle}
+  .tabs{display:flex;gap:2px;border-bottom:1px solid #c3c4c7;margin-bottom:14px;font-size:12.5px;overflow:hidden}
+  .tabs span{padding:5px 11px;border:1px solid #c3c4c7;border-bottom:0;background:#dcdcde;border-radius:3px 3px 0 0;white-space:nowrap}
+  .tabs span.on{background:#f0f0f1;font-weight:700}
+  .sum{display:flex;align-items:center;gap:10px;border-radius:8px;padding:10px 12px;font-weight:700;margin-bottom:10px}
+  .sum.ok{background:#edfaef;border:1px solid #b8e6c1;color:#00602a}
+  .dot{flex:0 0 auto;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:800}
+  .d-ok{background:#12a150}.d-bad{background:#d63638}.d-warn{background:#dba617}
+  .rows{background:#fff;border:1px solid #dcdcde;border-radius:8px}
+  .rows div{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #f0f0f1}
+  .rows div:last-child{border-bottom:0}
+  .rows em{font-style:normal;color:#50575e;margin-inline-start:auto;font-size:12.5px}
+  .funnel{background:#fff;border:1px solid #dcdcde;border-radius:8px;padding:14px}
+  .fr{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .fr:last-child{margin-bottom:0}
+  .fr label{width:120px;font-size:12.5px;color:#3c434a}
+  .fr .tr{flex:1;height:24px;background:#f0f0f1;border-radius:5px;overflow:hidden}
+  .fr .br{height:100%;border-radius:5px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;padding:0 8px}
+  .kpis{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin-bottom:12px}
+  .kpi{background:#fff;border:1px solid #dcdcde;border-radius:8px;padding:10px 12px}
+  .kpi.main{background:linear-gradient(135deg,#12467b,#2a7ae2);color:#fff;border:0}
+  .kpi small{display:block;font-size:11.5px;opacity:.8}
+  .kpi b{font-family:var(--display);font-size:24px;line-height:1.3}
+  .sample{font-size:11.5px;color:#8c8f94;margin-top:8px}
+
+  /* گالری */
+  .gallery{position:relative}
+  .track{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:14px;scrollbar-width:thin;
+    scrollbar-color:rgba(255,255,255,.25) transparent}
+  .track img{flex:0 0 min(86%,820px);scroll-snap-align:center;border-radius:18px;border:1px solid var(--line);
+    box-shadow:0 22px 50px rgba(0,0,0,.4);aspect-ratio:16/9;object-fit:cover}
+  .g-nav{display:flex;gap:10px;margin-top:18px}
+  .g-nav button{width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.05);
+    color:var(--ink);font-size:20px;cursor:pointer;font-family:var(--body)}
+  .g-nav button:hover{background:rgba(255,255,255,.12)}
+  .g-nav button:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+  /* پیامک */
+  .providers{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+  .providers span{border:1px solid var(--line);background:var(--surf);border-radius:12px;padding:8px 18px;font-weight:500}
+
+  /* تغییرات */
+  .log{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .ver{background:var(--surf);border:1px solid var(--line);border-radius:18px;padding:22px}
+  .ver b{font-family:var(--display);font-size:20px}
+  .ver b small{font-family:var(--body);font-size:12.5px;color:var(--mint);font-weight:700;margin-inline-start:6px}
+  .ver ul{margin:10px 0 0;padding-inline-start:18px;color:var(--soft);font-size:15px;line-height:1.95}
+
+  /* پرسش‌ها */
+  .faq{display:grid;gap:12px;max-width:860px}
+  .faq details{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:0 22px}
+  .faq summary{cursor:pointer;list-style:none;padding:18px 0;font-family:var(--display);font-weight:700;font-size:17.5px;
+    display:flex;align-items:center;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";margin-inline-start:auto;color:var(--mint);font-size:24px;font-family:var(--body);line-height:1}
+  .faq details[open] summary::after{content:"−"}
+  .faq summary:focus-visible{outline:2px solid var(--sky);outline-offset:4px;border-radius:6px}
+  .faq p{color:var(--soft);padding-bottom:20px;font-size:16px}
+
+  /* پایانی */
+  .final{text-align:center;border-radius:28px;padding:56px 26px;border:1px solid rgba(255,255,255,.18);
+    background:radial-gradient(70% 90% at 50% 0%, rgba(62,240,162,.16), transparent 70%),
+               radial-gradient(60% 80% at 100% 100%, rgba(111,216,255,.14), transparent 70%), rgba(255,255,255,.03)}
+  .final img{width:120px;margin:0 auto 10px}
+  .final h2{font-size:clamp(28px,3.6vw,44px)}
+  .final p{color:var(--soft);margin:14px auto 0;max-width:34em;font-size:17.5px}
+  .final .actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
+  footer{border-top:1px solid var(--line);padding-block:30px;color:var(--mute);font-size:14px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+
+  .split > *,.hero .wrap > *{min-width:0}
+  .window{max-width:100%}
+
+  /* ریسپانسیو */
+  @media (max-width:980px){
+    .hero .wrap,.split{grid-template-columns:1fr}
+    .visual{width:min(80%,380px);order:-1}
+    .problem,.steps{grid-template-columns:repeat(2,1fr)}
+    .features,.log{grid-template-columns:repeat(2,1fr)}
+    .nav nav{display:none}
+    .split .shot{order:-1}
+  }
+  @media (max-width:600px){
+    body{font-size:16px}
+    .problem,.steps,.features,.log{grid-template-columns:1fr}
+    section{padding-block:64px}
+    .kpis{grid-template-columns:1fr 1fr}.kpis .main{grid-column:1/-1}
+    .fr label{width:92px}
+    .order{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/img/icon-180.png" alt="">بازگردان</a>
+    <nav aria-label="بخش‌ها">
+      <a href="#how">چطور کار می‌کند</a>
+      <a href="#features">امکانات</a>
+      <a href="#report">گزارش</a>
+      <a href="#faq">پرسش‌ها</a>
+      <a href="guide.pdf">راهنما</a>
+    </nav>
+    <a class="btn btn-main btn-sm cta" data-buy href="https://www.zhaket.com/">خرید از ژاکت</a>
+  </div>
+</header>
+
+<main id="top">
+
+<div class="hero">
+  <div class="sky"></div>
+  <div class="wrap">
+    <div>
+      <span class="kicker">افزونه ووکامرس</span>
+      <h1>مشتری تا درگاه آمد،<br><span class="hl">ولی پرداخت کامل نشد.</span></h1>
+      <p class="lede">
+        این سفارش‌ها در پیشخوان ووکامرس با وضعیت «ناموفق» می‌مانند و کسی سراغشان نمی‌رود.
+        بازگردان خودکار پیگیری‌شان می‌کند — ایمیل و پیامک با لینک پرداخت همان سفارش —
+        و به شما نشان می‌دهد دقیقاً چقدر فروش برگشته است.
+      </p>
+      <div class="actions">
+        <a class="btn btn-main" data-buy href="https://www.zhaket.com/">خرید از ژاکت</a>
+        <a class="btn btn-ghost" href="#how">ببینید چطور کار می‌کند</a>
+      </div>
+      <div class="chips">
+        <span>سازگار با HPOS و چک‌اوت بلوکی</span>
+        <span>کاوه‌نگار، SMS.ir، ملی پیامک</span>
+        <span>رابط کاملاً فارسی</span>
+      </div>
+    </div>
+    <div class="visual" aria-hidden="true">
+      <img class="coin" src="assets/img/coin.png" alt="" width="640" height="640">
+      <div class="order"><b>سفارش #۱۲۴۸</b><span class="pill p-red">ناموفق</span> ← <span class="pill p-green">پرداخت شد</span></div>
+      <div class="ticket">٪۱۰ تخفیف</div>
+    </div>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">مسئله</div>
+      <h2>این مشتری‌ها تصمیم خرید را گرفته بودند</h2>
+      <p>فقط یک مانع فنی جلویشان را گرفت. فاصله‌شان تا یک خرید موفق، یک یادآوری به‌موقع است.</p>
+    </div>
+    <div class="problem">
+      <div class="reason"><b>رمز دوم نداشت</b><span>پیامک رمز پویا دیر رسید یا اصلاً نرسید.</span></div>
+      <div class="reason"><b>درگاه خطا داد</b><span>بانک پاسخ نداد و پرداخت ناتمام ماند.</span></div>
+      <div class="reason"><b>اینترنت قطع شد</b><span>درست بین درگاه و بازگشت به سایت.</span></div>
+      <div class="reason"><b>صفحه را بست</b><span>می‌خواست بعداً برگردد، ولی فراموش کرد.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">روند کار</div>
+      <h2>از خطای پرداخت تا بازگشت مشتری</h2>
+      <p>همه‌چیز خودکار است. شما فقط یک‌بار تنظیمش می‌کنید.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>تشخیص</h3><p>سفارش ناموفق یا رهاشده همان لحظه شناسایی و برای پیگیری زمان‌بندی می‌شود.</p></div>
+      <div class="step"><h3>بررسی مجدد</h3><p>درست پیش از ارسال، وضعیت دوباره چک می‌شود. اگر مشتری خودش پرداخت کرده، پیامی نمی‌رود.</p></div>
+      <div class="step"><h3>پیگیری</h3><p>ایمیل و پیامک با لینک پرداخت مجدد همان سفارش ارسال می‌شود. نیازی به ثبت دوباره نیست.</p></div>
+      <div class="step"><h3>بازگشت</h3><p>کلیک و خرید مشتری ثبت می‌شود و در گزارش نرخ بازگشت پیش چشم شماست.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">امکانات</div>
+      <h2>فراتر از یک ایمیل ساده</h2>
+    </div>
+    <div class="features">
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></div>
+        <h3>دنباله دو مرحله‌ای</h3><p>پیام اول چند دقیقه بعد، و اگر بی‌نتیجه ماند، پیام دوم ساعت‌ها بعد با متن و انگیزه متفاوت.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 9V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3a3 3 0 0 0 0 6v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a3 3 0 0 0 0-6z"/><path d="M9 15l6-6"/></svg></div>
+        <h3>کد تخفیف زمان‌دار</h3><p>کد یکتا و یک‌بارمصرف، قفل‌شده روی ایمیل همان مشتری، با انقضای ساعتی.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 7h12l-1.2 12.2a1 1 0 0 1-1 .8H8.2a1 1 0 0 1-1-.8z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></div>
+        <h3>سبد مجدد</h3><p>کد تخفیف روی سفارش ثبت‌شده اعمال نمی‌شود؛ پس محصولات همان سفارش با تخفیف دوباره در سبد مشتری قرار می‌گیرد.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15v-4"/><path d="M12 15V8"/><path d="M16 15v-6"/></svg></div>
+        <h3>گزارش نرخ بازگشت</h3><p>قیف ارسال ← کلیک ← خرید، مبلغ بازیابی‌شده و نمودار روند؛ عددی که ارزش افزونه را ثابت می‌کند.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+        <h3>عیب‌یابی ایمیل</h3><p>اسکن اتصال سرور ایمیل و بررسی رکوردهای SPF و DKIM، تا بدانید چرا ایمیل ارسال می‌شود ولی نمی‌رسد.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/></svg></div>
+        <h3>خبر دقیق برای مدیر</h3><p>ایمیل اطلاع‌رسانی با جدول کامل محصولات سفارش: نام، کد محصول، تعداد و مبلغ.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>سازگار با هاست ایرانی</h3><p>مسیر جبرانی زمان‌بندی وقتی کرون وردپرس کار نمی‌کند، و تنظیم یک‌کلیکی منطقه زمانی تهران.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></div>
+        <h3>بدون پیام بی‌مورد</h3><p>درگاه‌های خاص مستثنی می‌شوند و اگر مشتری بعداً سفارش موفق دیگری ثبت کرده باشد، پیامی نمی‌رود.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M8 9l-3 3 3 3"/><path d="M16 9l3 3-3 3"/></svg></div>
+        <h3>برای توسعه‌دهندگان</h3><p>قالب ایمیل قابل بازنویسی در پوسته و مجموعه‌ای از قلاب‌ها برای شخصی‌سازی.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="report">
+  <div class="wrap split">
+    <div class="copy">
+      <div class="eyebrow">گزارش عملکرد</div>
+      <h2>ببینید <span class="hl">چقدر فروش برگشته</span></h2>
+      <p>صفحه اول افزونه، به‌جای حدس، عدد نشان می‌دهد. نرخ کلیک پایین یعنی متن ایمیل ضعیف است؛ کلیک بالا ولی خرید پایین یعنی مشکل از درگاه یا قیمت.</p>
+      <ul>
+        <li>نرخ بازگشت و مبلغ فروش بازیابی‌شده</li>
+        <li>قیف ارسال، کلیک و خرید</li>
+        <li>نمودار روند ۱۴ روزه</li>
+        <li>سهم پیام اول در برابر پیام دوم</li>
+      </ul>
+    </div>
+    <div class="shot">
+      <div class="window" role="img" aria-label="نمای صفحه گزارش عملکرد افزونه">
+        <div class="bar"><i></i><i></i><i></i><span>wp-admin › ووکامرس › سفارش‌های ناموفق</span></div>
+        <div class="wp">
+          <h4>بازیابی سفارش‌های ناموفق ووکامرس <small>نسخه ۱.۷.۰</small></h4>
+          <div class="tabs"><span>وضعیت و تست</span><span class="on">گزارش عملکرد</span><span>تنظیمات عمومی</span><span>پیام اول</span></div>
+          <div class="kpis">
+            <div class="kpi main"><small>نرخ بازگشت</small><b>۲۸٫۴٪</b></div>
+            <div class="kpi"><small>فروش بازیابی‌شده</small><b>۴۷٫۸ م</b></div>
+            <div class="kpi"><small>میانگین هر بازیابی</small><b>۱٫۳ م</b></div>
+          </div>
+          <div class="funnel">
+            <div class="fr"><label>پیام ارسال شد</label><div class="tr"><div class="br" style="width:100%;background:#2a7ae2">۱۳۱</div></div></div>
+            <div class="fr"><label>روی لینک کلیک کرد</label><div class="tr"><div class="br" style="width:58%;background:#7a5af8">۷۶</div></div></div>
+            <div class="fr"><label>خرید را تکمیل کرد</label><div class="tr"><div class="br" style="width:28.4%;background:#12a150">۳۷</div></div></div>
+          </div>
+          <p class="sample">اعداد این نما نمونه‌اند؛ افزونه همین گزارش را با داده واقعی فروشگاه شما می‌سازد.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap split">
+    <div class="shot">
+      <div class="window" role="img" aria-label="نمای صفحه وضعیت و تست افزونه">
+        <div class="bar"><i></i><i></i><i></i><span>wp-admin › ووکامرس › سفارش‌های ناموفق</span></div>
+        <div class="wp">
+          <h4>بازیابی سفارش‌های ناموفق ووکامرس <small>نسخه ۱.۷.۰</small></h4>
+          <div class="tabs"><span class="on">وضعیت و تست</span><span>گزارش عملکرد</span><span>تنظیمات عمومی</span><span>پیام اول</span></div>
+          <div class="sum ok"><span class="dot d-ok">✔</span>همه چیز سالم است. افزونه آماده ارسال خودکار است.</div>
+          <div class="rows">
+            <div><span class="dot d-ok">✔</span>افزونه ارسال ایمیل<em>FluentSMTP</em></div>
+            <div><span class="dot d-ok">✔</span>اتصال سرور ایمیل<em>localhost : ۲۵</em></div>
+            <div><span class="dot d-ok">✔</span>رکورد SPF دامنه<em>دارد</em></div>
+            <div><span class="dot d-ok">✔</span>امضای DKIM<em>دارد</em></div>
+            <div><span class="dot d-ok">✔</span>زمان‌بند ووکامرس<em>فعال — ۳ پیام در صف</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <div class="eyebrow">وضعیت و تست</div>
+      <h2>وقتی ایمیل نمی‌رسد، <span class="hl">خودش می‌گوید چرا</span></h2>
+      <p>بیشتر افزونه‌ها فقط می‌نویسند «ارسال شد». بازگردان سیستم ایمیل سایت شما را از سر تا ته بررسی می‌کند.</p>
+      <ul>
+        <li>تست کامل: جدا کردن مشکل سرور ایمیل از مشکل افزونه</li>
+        <li>اسکن خودکار هاست و پورت درست برای SMTP</li>
+        <li>بررسی SPF، DKIM، DMARC و MX دامنه</li>
+        <li>متن دقیق خطای سرور ایمیل، با توضیح فارسی</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">پیامک</div>
+      <h2>ایمیل خوانده نشد؟ پیامک می‌رسد</h2>
+      <p>با متن آزاد یا الگوی خدماتی. شماره‌ها خودکار یکسان‌سازی می‌شوند؛ ارقام فارسی، ۹۸+ و ۰۰۹۸ همه پذیرفته است.</p>
+    </div>
+    <div class="providers"><span>کاوه‌نگار</span><span>اس‌ام‌اس دات آی‌آر</span><span>ملی پیامک</span></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap gallery">
+    <div class="sec-head">
+      <div class="eyebrow">گالری</div>
+      <h2>نگاهی نزدیک‌تر</h2>
+    </div>
+    <div class="track" id="track" tabindex="0" aria-label="تصاویر معرفی افزونه">
+      <img src="assets/img/gallery-1.webp" alt="معرفی افزونه بازگردان" loading="lazy" width="1280" height="720">
+      <img src="assets/img/gallery-2.webp" alt="روند کار: تشخیص، بررسی مجدد، پیگیری، بازگشت" loading="lazy" width="1280" height="720">
+      <img src="assets/img/gallery-3.webp" alt="قیف گزارش نرخ بازگشت" loading="lazy" width="1280" height="720">
+      <img src="assets/img/gallery-4.webp" alt="پیام دوم با کد تخفیف زمان‌دار" loading="lazy" width="1280" height="720">
+      <img src="assets/img/gallery-5.webp" alt="صفحه وضعیت و تست ایمیل" loading="lazy" width="1280" height="720">
+    </div>
+    <div class="g-nav">
+      <button type="button" id="gPrev" aria-label="تصویر قبلی">→</button>
+      <button type="button" id="gNext" aria-label="تصویر بعدی">←</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">تغییرات</div>
+      <h2>آخرین نسخه‌ها</h2>
+    </div>
+    <div class="log">
+      <div class="ver"><b>۱.۷.۰ <small>آخرین نسخه</small></b><ul>
+        <li>اتصال کامل لایسنس به ژاکت گارد</li><li>پشتیبانی از ارقام فارسی در تنظیمات</li><li>تنظیم یک‌کلیکی منطقه زمانی تهران</li></ul></div>
+      <div class="ver"><b>۱.۵.۰</b><ul>
+        <li>جدول محصولات در ایمیل مدیر</li><li>شورت‌کد نام محصولات سفارش</li></ul></div>
+      <div class="ver"><b>۱.۴.۰</b><ul>
+        <li>بررسی اعتبار دامنه: SPF، DKIM، DMARC، MX</li><li>اسکن اتصال سرور ایمیل</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="band">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">پرسش‌ها</div><h2>پرسش‌های پرتکرار</h2></div>
+    <div class="faq">
+      <details><summary>اگر مشتری خودش دوباره پرداخت کند، باز هم پیام می‌رود؟</summary>
+        <p>خیر. افزونه درست پیش از ارسال، وضعیت سفارش را دوباره بررسی می‌کند. اگر پرداخت شده باشد، یا اگر مشتری بعداً سفارش موفق دیگری ثبت کرده باشد، هیچ پیامی ارسال نمی‌شود.</p></details>
+      <details><summary>برای ارسال ایمیل چه چیزی لازم است؟</summary>
+        <p>یک افزونه SMTP و یک صندوق ایمیل روی دامنه خودتان. اگر هاست و پورت درست را نمی‌دانید، ابزار «اسکن اتصال سرور ایمیل» داخل افزونه پیدایش می‌کند.</p></details>
+      <details><summary>چرا کد تخفیف روی همان سفارش قبلی اعمال نمی‌شود؟</summary>
+        <p>ووکامرس اجازه نمی‌دهد کوپن روی سفارشی که ثبت شده اعمال شود. برای همین بازگردان محصولات همان سفارش را با کد تخفیف دوباره در سبد خرید مشتری می‌گذارد، و لینک پرداخت سفارش اصلی هم به‌عنوان گزینه دوم باقی می‌ماند.</p></details>
+      <details><summary>روی هاست‌های اشتراکی ایرانی کار می‌کند؟</summary>
+        <p>بله. زمان‌بندی بر پایه Action Scheduler ووکامرس است و اگر کرون وردپرس روی هاست شما اجرا نشود، مسیر جبرانی با بازدید عادی سایت کارهای عقب‌افتاده را انجام می‌دهد.</p></details>
+      <details><summary>نرخ بازگشت چطور محاسبه می‌شود؟</summary>
+        <p>تعداد سفارش‌هایی که پس از پیام پرداخت شدند، تقسیم بر تعداد سفارش‌هایی که پیام گرفتند — چه با پرداخت همان سفارش، چه با ثبت سفارش جدید از مسیر سبد مجدد.</p></details>
+      <details><summary>به‌روزرسانی‌ها چطور می‌رسند؟</summary>
+        <p>با افزونه بروزرسان هوشمند ژاکت که همراه فایل دانلودی است، نسخه‌های جدید با یک کلیک از پیشخوان نصب می‌شوند.</p></details>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="final">
+      <img src="assets/img/coin.png" alt="" width="120" height="120">
+      <h2>هر سفارش ناموفق، <span class="hl">یک فروش از دست رفته نیست</span></h2>
+      <p>بازگردان را نصب کنید، یک‌بار تنظیمش کنید، و از گزارش ببینید چه چیزی برمی‌گردد.</p>
+      <div class="actions">
+        <a class="btn btn-main" data-buy href="https://www.zhaket.com/">خرید از ژاکت</a>
+        <a class="btn btn-ghost" href="guide.pdf">دریافت راهنمای کامل</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>افزونه ووکامرس بازگردان — نسخه ۱.۷.۰</span>
+    <span>فروش و پشتیبانی از طریق ژاکت</span>
+  </div>
+</footer>
+
+<script>
+  /* آدرس صفحه محصول در ژاکت — بعد از تأیید محصول فقط همین یک خط را عوض کنید */
+  var BUY_URL = 'https://www.zhaket.com/';
+  document.querySelectorAll('[data-buy]').forEach(function (a) { a.href = BUY_URL; });
+
+  (function () {
+    var track = document.getElementById('track');
+    if (!track) return;
+    function step(dir) {
+      var img = track.querySelector('img');
+      var w = img ? img.getBoundingClientRect().width + 18 : 600;
+      track.scrollBy({ left: dir * w, behavior: 'smooth' });
+    }
+    /* در صفحه راست‌چین، «بعدی» یعنی حرکت به سمت چپ */
+    document.getElementById('gNext').addEventListener('click', function () { step(-1); });
+    document.getElementById('gPrev').addEventListener('click', function () { step(1); });
+  })();
+</script>
+</body>
+</html>
