@@ -79,7 +79,7 @@
   .chips span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mint);
     margin-inline-end:8px;vertical-align:middle}
   .visual{position:relative;justify-self:center;width:min(100%,460px);aspect-ratio:1}
-  .visual .coin{width:100%;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 30px 40px rgba(0,0,0,.35))}
+  .visual .coin{width:100%;height:auto;margin-top:8%;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 30px 40px rgba(0,0,0,.35))}
   .ticket{position:absolute;left:4%;bottom:12%;background:linear-gradient(135deg,#fff,#e5f2ff);color:#0d2a4d;
     font-family:var(--display);font-weight:800;font-size:clamp(16px,2vw,22px);padding:12px 26px;border-radius:14px;
     transform:rotate(-11deg);box-shadow:0 2px 0 #c5d8ec,0 4px 0 #b3cae3,0 6px 0 #a3bddb,0 24px 36px rgba(0,0,0,.45);
@@ -87,7 +87,7 @@
   .ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:18px;height:18px;border-radius:50%;
     background:var(--ground);transform:translateY(-50%)}
   .ticket::before{left:-9px}.ticket::after{right:-9px}
-  .order{position:absolute;right:0;top:8%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);
+  .order{position:absolute;right:-2%;top:0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);
     backdrop-filter:blur(8px);border-radius:16px;padding:12px 16px;font-size:14px;box-shadow:0 18px 36px rgba(0,0,0,.35);
     animation:float 7s ease-in-out -4s infinite}
   .order b{font-family:var(--display);display:block;font-size:15px}
@@ -170,12 +170,41 @@
   .kpi b{font-family:var(--display);font-size:24px;line-height:1.3}
   .sample{font-size:11.5px;color:#8c8f94;margin-top:8px}
 
+  /* ویدیو */
+  .video{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 60px rgba(0,0,0,.45);background:#000;aspect-ratio:16/9}
+  .video video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+  .video .play{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;border:0;cursor:pointer;
+    background:linear-gradient(180deg,rgba(7,21,40,.15),rgba(7,21,40,.55));color:#fff;font-family:var(--display);font-size:22px}
+  .video .play i{width:92px;height:92px;border-radius:50%;background:linear-gradient(135deg,#3ef0a2,#12a150);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 12px rgba(62,240,162,.2),0 18px 40px rgba(0,0,0,.45);font-style:normal}
+  .video .play i::before{content:"";border-style:solid;border-width:18px 0 18px 30px;border-color:transparent transparent transparent #fff;margin-left:8px}
+  .video.playing .play{display:none}
+
+  /* مزیت اصلی */
+  .why{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .why-card{background:linear-gradient(160deg,rgba(62,240,162,.12),rgba(111,216,255,.06));border:1px solid rgba(62,240,162,.35);border-radius:22px;padding:28px;position:relative;overflow:hidden}
+  .why-card h3{font-family:var(--display);font-size:26px;line-height:1.5;margin:0 0 8px}
+  .why-card p{color:var(--soft);margin:0}
+  .why-card img{position:absolute;left:14px;bottom:10px;width:120px;opacity:.95}
+  .why-card .txt{padding-left:120px}
+  .vs{margin-top:22px;width:100%;border-collapse:separate;border-spacing:0;border-radius:18px;overflow:hidden;border:1px solid var(--line);font-size:15.5px}
+  .vs th{background:rgba(255,255,255,.06);padding:12px;font-family:var(--display)}
+  .vs th.us{background:linear-gradient(135deg,#12a150,#3ef0a2);color:#04301f}
+  .vs td{padding:10px 12px;border-top:1px solid var(--line);text-align:center}
+  .vs td:first-child{text-align:right}
+  .vs .y{color:#3ef0a2;font-weight:700}.vs .n{color:#6f86a3}
+
   /* گالری */
   .gallery{position:relative}
-  .track{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:14px;scrollbar-width:thin;
-    scrollbar-color:rgba(255,255,255,.25) transparent}
-  .track img{flex:0 0 min(86%,820px);scroll-snap-align:center;border-radius:18px;border:1px solid var(--line);
-    box-shadow:0 22px 50px rgba(0,0,0,.4);aspect-ratio:16/9;object-fit:cover}
+  .shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+  .shots button{padding:0;border:0;background:none;cursor:zoom-in;border-radius:18px;display:block;width:100%}
+  .shots button:first-child{grid-column:1 / -1}
+  .shots img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:18px;border:1px solid var(--line);
+    box-shadow:0 22px 50px rgba(0,0,0,.4);background:#eef7ff}
+  .shots button:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+  .lightbox{position:fixed;inset:0;z-index:100;background:rgba(3,10,20,.9);display:none;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
   .g-nav{display:flex;gap:10px;margin-top:18px}
   .g-nav button{width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.05);
     color:var(--ink);font-size:20px;cursor:pointer;font-family:var(--body)}
@@ -224,12 +253,15 @@
     .visual{width:min(80%,380px);order:-1}
     .problem,.steps{grid-template-columns:repeat(2,1fr)}
     .features,.log{grid-template-columns:repeat(2,1fr)}
+    .why{grid-template-columns:1fr}
     .nav nav{display:none}
     .split .shot{order:-1}
   }
   @media (max-width:600px){
     body{font-size:16px}
-    .problem,.steps,.features,.log{grid-template-columns:1fr}
+    .problem,.steps,.features,.log,.shots{grid-template-columns:1fr}
+    .why-card img{position:static;width:90px;margin-bottom:6px}.why-card .txt{padding-left:0}
+    .vs{font-size:13.5px}
     section{padding-block:64px}
     .kpis{grid-template-columns:1fr 1fr}.kpis .main{grid-column:1/-1}
     .fr label{width:92px}
@@ -243,6 +275,7 @@
   <div class="wrap">
     <a class="brand" href="#top"><img src="assets/img/icon-180.png" alt="">بازگردان</a>
     <nav aria-label="بخش‌ها">
+      <a href="#video">ویدیو</a>
       <a href="#how">چطور کار می‌کند</a>
       <a href="#features">امکانات</a>
       <a href="#report">گزارش</a>
@@ -277,12 +310,50 @@
       </div>
     </div>
     <div class="visual" aria-hidden="true">
-      <img class="coin" src="assets/img/coin.png" alt="" width="640" height="640">
+      <img class="coin" src="assets/img/mascot.webp" alt="" width="640" height="595">
       <div class="order"><b>سفارش #۱۲۴۸</b><span class="pill p-red">ناموفق</span> ← <span class="pill p-green">پرداخت شد</span></div>
       <div class="ticket">٪۱۰ تخفیف</div>
     </div>
   </div>
 </div>
+
+<section id="video">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">ویدیو معرفی</div>
+      <h2>بازگردان در <span class="hl">۳۰ ثانیه</span></h2>
+    </div>
+    <div class="video" id="vid">
+      <video src="assets/video/teaser.mp4" poster="assets/video/poster.webp" preload="none" playsinline controls></video>
+      <button type="button" class="play" aria-label="پخش ویدیو معرفی"><i></i>پخش ویدیو معرفی</button>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">چرا بازگردان</div>
+      <h2>دو مزیتی که <span class="hl">بازگردان را متفاوت می‌کند</span></h2>
+    </div>
+    <div class="why">
+      <div class="why-card"><img src="assets/img/cart.webp" alt="" width="240" height="187"><div class="txt">
+        <h3>دو مسیر در یک افزونه، بدون پیام تکراری</h3>
+        <p>هم سبدی که بدون ثبت سفارش رها شده پیگیری می‌شود، هم سفارشی که پرداختش ناموفق مانده. با ثبت سفارش، پیگیری سبد متوقف می‌شود و مشتری‌ای که خودش خرید کرده پیامی نمی‌گیرد. پیامک هم مستقیم با کاوه‌نگار، SMS.ir و ملی پیامک ارسال می‌شود.</p></div></div>
+      <div class="why-card"><img src="assets/img/chart.webp" alt="" width="240" height="262"><div class="txt">
+        <h3>فروش برگشته را با عدد می‌بینید</h3>
+        <p>گزارش عملکرد نشان می‌دهد چند نفر پیام گرفتند، چند نفر کلیک کردند و چه مبلغی به فروشگاه برگشت؛ جداگانه برای سبدها و سفارش‌ها. به‌جای حدس، با عدد واقعی فروشگاه خودتان تصمیم می‌گیرید.</p></div></div>
+    </div>
+    <table class="vs">
+      <tr><th style="text-align:right">قابلیت</th><th class="us">بازگردان</th><th>یادآوری ساده</th></tr>
+      <tr><td>سبد رها شده مهمان و عضو</td><td class="y">✓</td><td class="n">—</td></tr>
+      <tr><td>سفارش ناموفق و لغوشده خودکار</td><td class="y">✓</td><td class="n">—</td></tr>
+      <tr><td>پیامک ایرانی بدون افزونه جانبی</td><td class="y">✓</td><td class="n">—</td></tr>
+      <tr><td>کد تخفیف یکتا، زمان‌دار و پلکانی</td><td class="y">✓</td><td class="n">—</td></tr>
+      <tr><td>گزارش فروش برگشته</td><td class="y">✓</td><td class="n">—</td></tr>
+    </table>
+  </div>
+</section>
 
 <section class="band">
   <div class="wrap">
@@ -368,7 +439,7 @@
       <div class="window" role="img" aria-label="نمای صفحه گزارش عملکرد افزونه">
         <div class="bar"><i></i><i></i><i></i><span>wp-admin › ووکامرس › سفارش‌های ناموفق</span></div>
         <div class="wp">
-          <h4>بازیابی سفارش‌های ناموفق ووکامرس <small>نسخه ۱.۸.۰</small></h4>
+          <h4>بازیابی سفارش‌های ناموفق ووکامرس <small>نسخه ۱.۸.۱</small></h4>
           <div class="tabs"><span>وضعیت و تست</span><span class="on">گزارش عملکرد</span><span>تنظیمات عمومی</span><span>پیام اول</span></div>
           <div class="kpis">
             <div class="kpi main"><small>نرخ بازگشت</small><b>۲۸٫۴٪</b></div>
@@ -393,7 +464,7 @@
       <div class="window" role="img" aria-label="نمای صفحه وضعیت و تست افزونه">
         <div class="bar"><i></i><i></i><i></i><span>wp-admin › ووکامرس › سفارش‌های ناموفق</span></div>
         <div class="wp">
-          <h4>بازیابی سفارش‌های ناموفق ووکامرس <small>نسخه ۱.۸.۰</small></h4>
+          <h4>بازیابی سفارش‌های ناموفق ووکامرس <small>نسخه ۱.۸.۱</small></h4>
           <div class="tabs"><span class="on">وضعیت و تست</span><span>گزارش عملکرد</span><span>تنظیمات عمومی</span><span>پیام اول</span></div>
           <div class="sum ok"><span class="dot d-ok">✔</span>همه چیز سالم است. افزونه آماده ارسال خودکار است.</div>
           <div class="rows">
@@ -436,20 +507,18 @@
     <div class="sec-head">
       <div class="eyebrow">گالری</div>
       <h2>نگاهی نزدیک‌تر</h2>
+      <p>تصاویر واقعی از پنل افزونه، پیام‌ها و روند کار</p>
     </div>
-    <div class="track" id="track" tabindex="0" aria-label="تصاویر معرفی افزونه">
-      <img src="assets/img/gallery-1.webp" alt="معرفی افزونه بازگردان" loading="lazy" width="1280" height="720">
-      <img src="assets/img/gallery-2.webp" alt="روند کار: تشخیص، بررسی مجدد، پیگیری، بازگشت" loading="lazy" width="1280" height="720">
-      <img src="assets/img/gallery-3.webp" alt="قیف گزارش نرخ بازگشت" loading="lazy" width="1280" height="720">
-      <img src="assets/img/gallery-4.webp" alt="پیام دوم با کد تخفیف زمان‌دار" loading="lazy" width="1280" height="720">
-      <img src="assets/img/gallery-5.webp" alt="صفحه وضعیت و تست ایمیل" loading="lazy" width="1280" height="720">
-      <img src="assets/img/gallery-6.webp" alt="مسیر سبد رها شده" loading="lazy" width="1280" height="720">
-      <img src="assets/img/gallery-7.webp" alt="ارسال گروهی و تخفیف پلکانی" loading="lazy" width="1280" height="720">
+    <div class="shots" id="shots">
+      <button type="button"><img src="assets/img/gallery-1.webp" alt="معرفی افزونه بازگردان" loading="lazy" width="1280" height="720"></button>
+      <button type="button"><img src="assets/img/gallery-2.webp" alt="روند کار: تشخیص، بررسی مجدد، پیگیری، گزارش" loading="lazy" width="1280" height="720"></button>
+      <button type="button"><img src="assets/img/gallery-3.webp" alt="صفحه گزارش عملکرد در پیشخوان" loading="lazy" width="1280" height="720"></button>
+      <button type="button"><img src="assets/img/gallery-4.webp" alt="فهرست سبدهای رها شده" loading="lazy" width="1280" height="720"></button>
+      <button type="button"><img src="assets/img/gallery-5.webp" alt="نمونه ایمیل و پیامک یادآوری" loading="lazy" width="1280" height="720"></button>
+      <button type="button"><img src="assets/img/gallery-6.webp" alt="کد تخفیف زمان‌دار و پلکانی" loading="lazy" width="1280" height="720"></button>
+      <button type="button"><img src="assets/img/gallery-7.webp" alt="ارسال گروهی بدون پیام تکراری" loading="lazy" width="1280" height="720"></button>
     </div>
-    <div class="g-nav">
-      <button type="button" id="gPrev" aria-label="تصویر قبلی">→</button>
-      <button type="button" id="gNext" aria-label="تصویر بعدی">←</button>
-    </div>
+    <p class="sample" style="text-align:center">برای دیدن در اندازه کامل، روی هر تصویر کلیک کنید.</p>
   </div>
 </section>
 
@@ -460,7 +529,9 @@
       <h2>آخرین نسخه‌ها</h2>
     </div>
     <div class="log">
-      <div class="ver"><b>۱.۸.۰ <small>آخرین نسخه</small></b><ul>
+      <div class="ver"><b>۱.۸.۱ <small>آخرین نسخه</small></b><ul>
+        <li>منوی افزونه با نام «بازگردان»</li><li>راهنمای مرحله‌به‌مرحله در تب ارسال دستی</li></ul></div>
+      <div class="ver"><b>۱.۸.۰</b><ul>
         <li>پیگیری سبد خرید رها شده برای عضو و مهمان</li><li>ارسال دستی و گروهی</li><li>تخفیف پلکانی و حذف خودکار کدهای منقضی</li><li>ویرایشگر کامل وردپرس برای ایمیل‌ها</li></ul></div>
       <div class="ver"><b>۱.۷.۰</b><ul>
         <li>اتصال کامل لایسنس به ژاکت گارد</li><li>پشتیبانی از ارقام فارسی در تنظیمات</li><li>تنظیم یک‌کلیکی منطقه زمانی تهران</li></ul></div>
@@ -499,7 +570,7 @@
 <section>
   <div class="wrap">
     <div class="final">
-      <img src="assets/img/coin.png" alt="" width="120" height="120">
+      <img src="assets/img/mascot.webp" alt="" width="130" height="121">
       <h2>هر سبد رها شده، <span class="hl">یک فروش از دست رفته نیست</span></h2>
       <p>بازگردان را نصب کنید، یک‌بار تنظیمش کنید، و از گزارش ببینید چه چیزی برمی‌گردد.</p>
       <div class="actions">
@@ -514,7 +585,7 @@
 
 <footer>
   <div class="wrap">
-    <span>افزونه ووکامرس بازگردان — نسخه ۱.۸.۰</span>
+    <span>افزونه ووکامرس بازگردان — نسخه ۱.۸.۱</span>
     <span>فروش و پشتیبانی از طریق ژاکت</span>
   </div>
 </footer>
@@ -525,16 +596,28 @@
   document.querySelectorAll('[data-buy]').forEach(function (a) { a.href = BUY_URL; });
 
   (function () {
-    var track = document.getElementById('track');
-    if (!track) return;
-    function step(dir) {
-      var img = track.querySelector('img');
-      var w = img ? img.getBoundingClientRect().width + 18 : 600;
-      track.scrollBy({ left: dir * w, behavior: 'smooth' });
+    var lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.setAttribute('role', 'dialog');
+    lb.innerHTML = '<img alt="">';
+    document.body.appendChild(lb);
+    document.querySelectorAll('#shots button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var img = b.querySelector('img');
+        lb.querySelector('img').src = img.src;
+        lb.querySelector('img').alt = img.alt;
+        lb.classList.add('open');
+      });
+    });
+    lb.addEventListener('click', function () { lb.classList.remove('open'); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+    var box = document.getElementById('vid');
+    if (box) {
+      var v = box.querySelector('video');
+      box.querySelector('.play').addEventListener('click', function () { box.classList.add('playing'); v.play(); });
+      v.addEventListener('play', function () { box.classList.add('playing'); });
     }
-    /* در صفحه راست‌چین، «بعدی» یعنی حرکت به سمت چپ */
-    document.getElementById('gNext').addEventListener('click', function () { step(-1); });
-    document.getElementById('gPrev').addEventListener('click', function () { step(1); });
   })();
 </script>
 </body>
